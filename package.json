@@ -87,9 +87,9 @@
     "url": "git+https://github.com/sadamkhan7679/react-confirm.git"
   },
   "bugs": {
-    "url": "https://github.com/razmisoft/react-confirm/issues"
+    "url": "https://github.com/sadamkhan7679/react-confirm/issues"
   },
-  "homepage": "https://github.com/razmisoft/react-confirm#readme",
+  "homepage": "https://github.com/sadamkhan7679/react-confirm#readme",
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --fix",
