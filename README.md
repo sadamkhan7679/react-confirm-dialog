@@ -1,40 +1,45 @@
-# @stackblitz/react-confirm
+# @razmisoft/react-confirm
 
-A flexible and customizable confirmation dialog component for React applications.
+A beautiful, flexible, and fully-featured confirmation dialog component for React applications. Built with TypeScript, Tailwind CSS, and Radix UI for maximum flexibility and accessibility.
 
-## Features
+![GitHub](https://img.shields.io/github/license/sadamkhan7679/react-confirm)
+![npm](https://img.shields.io/npm/v/@razmisoft/react-confirm)
+![npm bundle size](https://img.shields.io/bundlephobia/minzip/@razmisoft/react-confirm)
+![GitHub stars](https://img.shields.io/github/stars/sadamkhan7679/react-confirm)
 
-- 🎨 Fully customizable UI components
-- 🎯 Type-safe with TypeScript
-- 🔄 Handles nested confirmations
-- 📱 Responsive design
-- 🎭 Multiple variants support
-- 🌈 Tailwind CSS integration
-- ⌨️ Keyboard accessible
-- 🔍 Screen reader friendly
+![React Confirm Dialog Demo](https://source.unsplash.com/random/1200x630/?interface,dialog)
 
 ## Table of Contents
 
 - [Installation](#installation)
-- [Quick Start](#quick-start)
-- [Usage Examples](#usage-examples)
+- [Usage](#usage)
 - [API Reference](#api-reference)
-  - [Providers](#providers)
-  - [Hooks](#hooks)
-  - [Components](#components)
-  - [Types](#types)
-- [Best Practices](#best-practices)
 - [License](#license)
+- [Author](#author)
+- [Contributors](#contributors)
 
 ## Installation
 
+Using npm:
 ```bash
 npm install @razmisoft/react-confirm
 ```
 
-## Quick Start
+Using yarn:
+```bash
+yarn add @razmisoft/react-confirm
+```
 
-1. Wrap your app with `ConfirmProvider`:
+Using pnpm:
+```bash
+pnpm add @razmisoft/react-confirm
+```
+
+## Usage
+
+### Global Provider and Dialog
+
+Wrap your app with `ConfirmProvider`:
 
 ```tsx
 import { ConfirmProvider } from '@razmisoft/react-confirm';
@@ -48,88 +53,74 @@ function App() {
 }
 ```
 
-2. Use the `useConfirm` hook in your components:
+Use the `useConfirm` hook anywhere in your app:
 
 ```tsx
 import { useConfirm } from '@razmisoft/react-confirm';
 
 function DeleteButton() {
-  const confirm = useConfirm();
+  const { confirm } = useConfirm();
 
   const handleDelete = async () => {
-    const confirmed = await confirm({
-      title: 'Delete Item',
-      description: 'Are you sure you want to delete this item?',
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
-      variant: 'destructive',
-    });
+    try {
+      const confirmed = await confirm({
+        title: 'Delete Item',
+        description: 'Are you sure you want to delete this item?',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        variant: 'destructive',
+        onConfirm: async () => {
+          await deleteItem();
+        },
+      });
 
-    if (confirmed) {
-      // Perform delete operation
+      if (confirmed) {
+        console.log('Item deleted successfully');
+      }
+    } catch (error) {
+      console.error('Delete failed:', error);
     }
   };
 
-  return <button onClick={handleDelete}>Delete</button>;
+  return <Button onClick={handleDelete}>Delete</Button>;
 }
 ```
 
-## Usage Examples
+### Custom Dialog Component
 
-### Basic Confirmation
-
-```tsx
-const { confirm } = useConfirm();
-
-const handleAction = async () => {
-  const confirmed = await confirm({
-    title: 'Confirm Action',
-    description: 'Are you sure you want to proceed?'
-  });
-  
-  if (confirmed) {
-    // Handle confirmation
-  }
-};
-```
-
-### With Async Operation
+Create a custom dialog with all UI elements:
 
 ```tsx
-const { confirm } = useConfirm();
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, Button } from '@razmisoft/react-confirm';
 
-const handleSave = async () => {
-  const confirmed = await confirm({
-    title: 'Save Changes',
-    description: 'Save all pending changes?',
-    onConfirm: async () => {
-      await saveData();
-    }
-  });
-};
-```
-
-### Custom Dialog
-
-```tsx
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, Button } from '@razmisoft/react-confirm';
-
-function CustomDialog() {
+function CustomDialog({ open, onOpenChange }) {
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Custom Dialog</DialogTitle>
+          <DialogTitle>Edit Profile</DialogTitle>
+          <DialogDescription>
+            Make changes to your profile here.
+          </DialogDescription>
         </DialogHeader>
-        <div className="p-4">
-          {/* Custom content */}
+        
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label htmlFor="name">Name</label>
+            <input
+              id="name"
+              className="col-span-3"
+              placeholder="John Doe"
+            />
+          </div>
         </div>
+        
         <DialogFooter>
-          <Button variant="outline" onClick={onCancel}>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={onConfirm}>
-            Confirm
+          <Button onClick={() => onOpenChange(false)}>
+            Save changes
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -138,202 +129,137 @@ function CustomDialog() {
 }
 ```
 
+### Async Operations with Loading States
+
+```tsx
+function SaveButton() {
+  const { confirm, updateDialog } = useConfirm();
+
+  const handleSave = async () => {
+    try {
+      const confirmed = await confirm({
+        title: 'Save Changes',
+        description: 'Do you want to save all changes?',
+        onConfirm: async () => {
+          updateDialog({
+            title: 'Saving...',
+            description: 'Please wait while we save your changes.',
+          });
+
+          await saveChanges();
+
+          updateDialog({
+            title: 'Success',
+            description: 'Changes saved successfully!',
+          });
+
+          // Auto close after success
+          setTimeout(() => {
+            updateDialog({
+              title: 'Save Changes',
+              description: 'Do you want to save all changes?',
+            });
+          }, 1500);
+        },
+      });
+    } catch (error) {
+      console.error('Save failed:', error);
+    }
+  };
+
+  return <Button onClick={handleSave}>Save Changes</Button>;
+}
+```
+
 ## API Reference
-
-### Providers
-
-#### `ConfirmProvider`
-
-Root provider for global confirmation dialogs.
-
-```tsx
-import { ConfirmProvider } from '@razmisoft/react-confirm';
-
-<ConfirmProvider>
-  {children}
-</ConfirmProvider>
-```
-
-Props:
-- `children`: `React.ReactNode` - Child components that will have access to the confirmation context
-
-### Hooks
-
-#### `useConfirm`
-
-Hook for using the global confirmation dialog.
-
-```tsx
-const { 
-  confirm, 
-  updateDialog, 
-  closeDialog 
-} = useConfirm();
-```
-
-Returns:
-- `confirm`: `(options?: DialogOptions & { onConfirm?: () => Promise<void> }) => Promise<boolean>`
-  - Shows the confirmation dialog and returns a promise that resolves to boolean
-  - Options:
-    - `title`: `string` - Dialog title
-    - `description`: `string` - Dialog description
-    - `confirmText`: `string` - Text for confirm button (default: "Confirm")
-    - `cancelText`: `string` - Text for cancel button (default: "Cancel")
-    - `icon`: `React.ReactNode` - Custom icon component
-    - `variant`: `'default' | 'destructive'` - Dialog variant
-    - `onConfirm`: `() => Promise<void>` - Async function to execute on confirmation
-
-- `updateDialog`: `(options: Partial<DialogOptions>) => void`
-  - Updates the current dialog's content
-  - Useful for showing progress or changing messages
-
-- `closeDialog`: `() => void`
-  - Programmatically close the dialog
-
-#### `useConfirmation`
-
-Hook for managing local confirmation state without UI.
-
-```tsx
-const {
-  isOpen,
-  confirm,
-  handleConfirm,
-  handleCancel
-} = useConfirmation();
-```
-
-Returns:
-- `isOpen`: `boolean` - Current open state
-- `confirm`: `(options?: ConfirmationOptions) => Promise<boolean>`
-  - Triggers confirmation flow
-  - Options:
-    - `onConfirm`: `() => Promise<void> | void`
-    - `onCancel`: `() => void`
-- `handleConfirm`: `() => Promise<void>` - Handle confirmation action
-- `handleCancel`: `() => void` - Handle cancellation
 
 ### Components
 
-#### `Dialog`
-
-Base dialog component built on Radix UI's Dialog primitive.
+#### Button
 
 ```tsx
-import { Dialog } from '@razmisoft/react-confirm';
-
-<Dialog
-  open={boolean}
-  onOpenChange={(open: boolean) => void}
->
-  <DialogContent>
-    <DialogHeader>
-      <DialogTitle>Title</DialogTitle>
-      <DialogDescription>Description</DialogDescription>
-    </DialogHeader>
-    {children}
-  </DialogContent>
-</Dialog>
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  startIcon?: React.ReactNode;
+  endIcon?: React.ReactNode;
+  loading?: boolean;
+  loadingText?: string;
+}
 ```
 
-Props:
-- `open`: `boolean` - Controls dialog visibility
-- `onOpenChange`: `(open: boolean) => void` - Called when open state changes
-- `children`: `React.ReactNode` - Dialog content
+Default values:
+- `variant`: 'default'
+- `size`: 'default'
+- `loading`: false
+- `loadingText`: 'Loading...'
 
-#### `DialogContent`
-
-Container for dialog content with animations and styling.
-
-Props:
-- `children`: `React.ReactNode`
-- `className?`: `string`
-
-#### `DialogHeader`
-
-Standard header section for dialogs.
-
-Props:
-- `children`: `React.ReactNode`
-- `className?`: `string`
-
-#### `DialogFooter`
-
-Footer section for dialog actions.
-
-Props:
-- `children`: `React.ReactNode`
-- `className?`: `string`
-
-#### `DialogTitle`
-
-Accessible dialog title component.
-
-Props:
-- `children`: `React.ReactNode`
-- `className?`: `string`
-
-#### `DialogDescription`
-
-Accessible dialog description component.
-
-Props:
-- `children`: `React.ReactNode`
-- `className?`: `string`
-
-#### `ConfirmDialog`
-
-Pre-built confirmation dialog with standard layout and behaviors.
+#### Dialog
 
 ```tsx
-<ConfirmDialog
-  open={boolean}
-  onOpenChange={(open: boolean) => void}
-  onConfirm={() => Promise<void>}
-  onCancel={() => void}
-  title="Confirm Action"
-  description="Are you sure?"
-  confirmText="Confirm"
-  cancelText="Cancel"
-  icon={<CustomIcon />}
-  variant="default"
-/>
+interface DialogProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  children: React.ReactNode;
+}
 ```
 
-Props:
-- `open`: `boolean` - Controls dialog visibility
-- `onOpenChange`: `(open: boolean) => void` - Called when open state changes
-- `onConfirm`: `() => Promise<void>` - Called when confirmed
-- `onCancel`: `() => void` - Called when cancelled
-- `title?`: `string` - Dialog title
-- `description?`: `string` - Dialog description
-- `confirmText?`: `string` - Confirm button text
-- `cancelText?`: `string` - Cancel button text
-- `icon?`: `React.ReactNode` - Custom icon
-- `variant?`: `'default' | 'destructive'` - Visual variant
+Required props:
+- `children`
 
-#### `Button`
-
-Styled button component used in dialogs.
+#### ConfirmDialog
 
 ```tsx
-<Button
-  variant="default"
-  size="default"
-  className="custom-class"
->
-  Click me
-</Button>
+interface ConfirmDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: () => Promise<void>;
+  onCancel: () => void;
+  title?: string;
+  description?: string;
+  confirmText?: string;
+  cancelText?: string;
+  icon?: React.ReactNode;
+  variant?: 'default' | 'destructive';
+}
 ```
 
-Props:
-- `variant?`: `'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'`
-- `size?`: `'default' | 'sm' | 'lg' | 'icon'`
-- All standard button props
+Required props:
+- `open`
+- `onOpenChange`
+- `onConfirm`
+- `onCancel`
 
-### Types
+Default values:
+- `title`: 'Confirm Action'
+- `confirmText`: 'Confirm'
+- `cancelText`: 'Cancel'
+- `variant`: 'default'
+
+### Providers
+
+#### ConfirmProvider
 
 ```tsx
+interface ConfirmProviderProps {
+  children: React.ReactNode;
+}
+```
+
+Required props:
+- `children`
+
+### Hooks
+
+#### useConfirm
+
+```tsx
+interface UseConfirmReturn {
+  confirm: (options?: DialogOptions & { onConfirm?: () => Promise<void> }) => Promise<boolean>;
+  updateDialog: (options: Partial<DialogOptions>) => void;
+  closeDialog: () => void;
+}
+
 interface DialogOptions {
   title?: string;
   description?: string;
@@ -342,41 +268,74 @@ interface DialogOptions {
   icon?: React.ReactNode;
   variant?: 'default' | 'destructive';
 }
+```
 
-interface ConfirmationOptions {
-  onConfirm?: () => Promise<void> | void;
-  onCancel?: () => void;
+#### useConfirmation
+
+```tsx
+interface UseConfirmationReturn {
+  isOpen: boolean;
+  options: DialogOptions;
+  confirm: (options?: ConfirmationOptions) => Promise<boolean>;
+  updateDialog: (options: Partial<DialogOptions>) => void;
+  handleConfirm: () => Promise<void>;
+  handleCancel: () => void;
 }
 
-interface ConfirmDialogProps extends DialogOptions {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onConfirm: () => Promise<void>;
-  onCancel: () => void;
+interface ConfirmationOptions extends DialogOptions {
+  onConfirm?: () => Promise<void>;
+  onCancel?: () => void;
+}
+```
+
+#### useConfirmDialog
+
+```tsx
+interface UseConfirmDialogReturn {
+  confirm: (options?: ConfirmDialogOptions) => Promise<boolean>;
+}
+
+interface ConfirmDialogOptions {
+  title?: string;
+  description?: string;
+  confirmText?: string;
+  cancelText?: string;
+  icon?: React.ReactNode;
+  variant?: 'default' | 'destructive';
+  onConfirm?: () => Promise<void>;
 }
 ```
 
 ## Best Practices
 
 1. **Global vs Local Dialogs**
-   - Use `useConfirm` for app-wide confirmations
-   - Use `useConfirmation` with custom UI for localized dialogs
+  - Use `useConfirm` for app-wide confirmations
+  - Use `useConfirmation` with custom UI for localized dialogs
 
 2. **Error Handling**
-   - Always handle async operations in `onConfirm`
-   - Use try/catch blocks for error states
+  - Always handle async operations in `onConfirm`
+  - Use try/catch blocks for error states
 
 3. **Accessibility**
-   - Provide descriptive titles and descriptions
-   - Use appropriate ARIA labels
-   - Ensure keyboard navigation works
+  - Provide descriptive titles and descriptions
+  - Use appropriate ARIA labels
+  - Ensure keyboard navigation works
 
 4. **UI/UX Guidelines**
-   - Use appropriate variants for different actions
-   - Keep descriptions clear and concise
-   - Show loading states during async operations
+  - Use appropriate variants for different actions
+  - Keep descriptions clear and concise
+  - Show loading states during async operations
 
 ## License
 
-MIT License
-```
+MIT © [Razmisoft](https://github.com/razmisoft)
+
+## Author
+
+Razmisoft (https://github.com/razmisoft)
+
+## Contributors
+
+- [List of contributors](https://github.com/razmisoft/react-confirm/graphs/contributors)
+
+Want to contribute? Check out our [Contributing Guide](CONTRIBUTING.md).
