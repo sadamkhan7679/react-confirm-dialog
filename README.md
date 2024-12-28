@@ -29,7 +29,7 @@ A flexible and customizable confirmation dialog component for React applications
 ## Installation
 
 ```bash
-npm install @stackblitz/react-confirm
+npm install @razmisoft/react-confirm
 ```
 
 ## Quick Start
@@ -37,7 +37,7 @@ npm install @stackblitz/react-confirm
 1. Wrap your app with `ConfirmProvider`:
 
 ```tsx
-import { ConfirmProvider } from '@stackblitz/react-confirm';
+import { ConfirmProvider } from '@razmisoft/react-confirm';
 
 function App() {
   return (
@@ -51,7 +51,7 @@ function App() {
 2. Use the `useConfirm` hook in your components:
 
 ```tsx
-import { useConfirm } from '@stackblitz/react-confirm';
+import { useConfirm } from '@razmisoft/react-confirm';
 
 function DeleteButton() {
   const confirm = useConfirm();
@@ -112,7 +112,7 @@ const handleSave = async () => {
 ### Custom Dialog
 
 ```tsx
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, Button } from '@stackblitz/react-confirm';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, Button } from '@razmisoft/react-confirm';
 
 function CustomDialog() {
   return (
@@ -147,7 +147,7 @@ function CustomDialog() {
 Root provider for global confirmation dialogs.
 
 ```tsx
-import { ConfirmProvider } from '@stackblitz/react-confirm';
+import { ConfirmProvider } from '@razmisoft/react-confirm';
 
 <ConfirmProvider>
   {children}
@@ -220,7 +220,7 @@ Returns:
 Base dialog component built on Radix UI's Dialog primitive.
 
 ```tsx
-import { Dialog } from '@stackblitz/react-confirm';
+import { Dialog } from '@razmisoft/react-confirm';
 
 <Dialog
   open={boolean}
