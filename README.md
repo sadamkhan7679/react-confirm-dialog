@@ -7,7 +7,8 @@ A beautiful, flexible, and fully-featured confirmation dialog component for Reac
 ![npm bundle size](https://img.shields.io/bundlephobia/minzip/@razmisoft/react-confirm)
 ![GitHub stars](https://img.shields.io/github/stars/sadamkhan7679/react-confirm)
 
-![React Confirm Dialog Demo](https://source.unsplash.com/random/1200x630/?interface,dialog)
+[//]: # (![React Confirm Dialog Demo]&#40;&#41;)
+![React Confirm Dialog](react-confirm.png "React Confirm Dialog")
 
 ## Table of Contents
 
