@@ -7,7 +7,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "./Dialog";
-import { Button } from "./Button";
+import { Button } from "./Button/Button";
 import { AlertTriangleIcon, LoaderIcon, CheckIcon, XIcon } from "./icons";
 import type { ConfirmDialogProps } from "../types";
 
@@ -53,10 +53,10 @@ export function ConfirmDialog({
   };
 
   const getStatusIcon = () => {
-    if (isLoading) return <LoaderIcon className="animate-spin text-blue-600" />;
-    if (error) return <XIcon className="text-red-600" />;
-    if (success) return <CheckIcon className="text-green-600" />;
-    return icon || <AlertTriangleIcon className="text-yellow-600" />;
+    if (isLoading) return <LoaderIcon className="animate-spin text-blue-600" aria-hidden="true" />;
+    if (error) return <XIcon className="text-red-600" aria-hidden="true" />;
+    if (success) return <CheckIcon className="text-green-600" aria-hidden="true" />;
+    return icon || <AlertTriangleIcon className="text-yellow-600" aria-hidden="true" />;
   };
 
   return (
@@ -68,19 +68,13 @@ export function ConfirmDialog({
           </div>
           <DialogTitle className="text-center">{title}</DialogTitle>
           {description && !error && !success && (
-            <DialogDescription className="text-center">
-              {description}
-            </DialogDescription>
+            <DialogDescription className="text-center">{description}</DialogDescription>
           )}
           {error && (
-            <DialogDescription className="text-center text-red-600">
-              {error}
-            </DialogDescription>
+            <DialogDescription className="text-center text-red-600">{error}</DialogDescription>
           )}
           {success && (
-            <DialogDescription className="text-center text-green-600">
-              {success}
-            </DialogDescription>
+            <DialogDescription className="text-center text-green-600">{success}</DialogDescription>
           )}
         </DialogHeader>
         <DialogFooter className="sm:justify-center">
@@ -90,9 +84,10 @@ export function ConfirmDialog({
           <Button
             variant={variant}
             onClick={handleConfirm}
+            loading={isLoading}
+            loadingText="Loading..."
             disabled={isLoading}
           >
-            {isLoading && <LoaderIcon className="mr-2 h-4 w-4 animate-spin" />}
             {confirmText}
           </Button>
         </DialogFooter>

@@ -1,8 +1,8 @@
 import * as React from "react";
 import { cva } from "class-variance-authority";
-import { Loader2 } from "lucide-react";
 import { cn } from "../../utils/cn";
 import { ButtonProps } from "./Button.types";
+import { LoaderIcon } from "../icons/Loader";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
@@ -11,8 +11,7 @@ const buttonVariants = cva(
       variant: {
         default: "bg-slate-900 text-slate-50 hover:bg-slate-900/90",
         destructive: "bg-red-500 text-slate-50 hover:bg-red-500/90",
-        outline:
-          "border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900",
+        outline: "border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900",
         secondary: "bg-slate-100 text-slate-900 hover:bg-slate-100/80",
         ghost: "hover:bg-slate-100 hover:text-slate-900",
         link: "text-slate-900 underline-offset-4 hover:underline",
@@ -54,18 +53,27 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         disabled={isDisabled}
+        aria-busy={loading}
         {...props}
       >
         {loading ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            {loadingText}
+            <LoaderIcon className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+            <span>{loadingText}</span>
           </>
         ) : (
           <>
-            {startIcon && <span className="mr-2">{startIcon}</span>}
-            {children}
-            {endIcon && <span className="ml-2">{endIcon}</span>}
+            {startIcon && (
+              <span className="mr-2" aria-hidden="true">
+                {startIcon}
+              </span>
+            )}
+            <span>{children}</span>
+            {endIcon && (
+              <span className="ml-2" aria-hidden="true">
+                {endIcon}
+              </span>
+            )}
           </>
         )}
       </button>
