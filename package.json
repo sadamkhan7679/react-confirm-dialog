@@ -1,6 +1,6 @@
 {
   "name": "@razmisoft/react-confirm",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A flexible and customizable confirmation dialog component for React applications",
   "author": "Razmisoft",
   "license": "MIT",
